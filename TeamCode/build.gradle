@@ -19,11 +19,39 @@ apply from: '../build.dependencies.gradle'
 android {
     namespace = 'org.firstinspires.ftc.teamcode'
 
+    // Overrides compileSdkVersion 30 from build.common.gradle. SolversLib / Panels
+    // pull in AndroidX components that require compiling against API 34+.
+    // compileSdk only affects which APIs are available at compile time --
+    // minSdk (24) and targetSdk (28) are untouched, so device behavior is unchanged.
+    compileSdk 36
+
     packagingOptions {
         jniLibs.useLegacyPackaging true
     }
 }
 
+repositories {
+    maven { url = 'https://maven.brott.dev/' }                  // FTC Dashboard
+    maven { url = 'https://mymaven.bylazar.com/releases' }      // Panels dashboard
+    maven { url = 'https://repo.dairy.foundation/releases' }    // SolversLib
+    maven { url = 'https://repo.dairy.foundation/snapshots' }
+}
+
 dependencies {
     implementation project(':FtcRobotController')
+    annotationProcessor files('lib/OpModeAnnotationProcessor.jar')
+
+    // SolversLib -- command framework (SubsystemBase, CommandOpMode, CommandScheduler).
+    // NOTE: 'org.solverslib:pedroPathing' is deliberately NOT included. Its POM pins
+    // com.pedropathing:ftc:2.0.6, which would clash with the 2.1.2 declared below --
+    // Gradle would resolve up to 2.1.2 while that module was compiled against 2.0.6.
+    // Use Pedro's own API directly instead.
+    implementation 'org.solverslib:core:0.3.5'
+
+    // Pedro Pathing
+    implementation 'com.pedropathing:ftc:2.1.2'
+    implementation 'com.pedropathing:telemetry:1.0.0'
+
+    // Panels dashboard (live config / telemetry, used for PID tuning)
+    implementation 'com.bylazar:fullpanels:1.0.13'
 }
