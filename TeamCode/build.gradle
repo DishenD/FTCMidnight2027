@@ -49,7 +49,6 @@ dependencies {
     implementation 'org.solverslib:core:0.3.5'
 
     // Pedro Pathing
-    implementation 'com.pedropathing:ftc:2.1.2'
     implementation 'com.pedropathing:telemetry:1.0.0'
 
     // Panels dashboard (live config / telemetry, used for PID tuning)
