@@ -34,8 +34,8 @@ public class BallIntake extends LinearOpMode {
 
         while(opModeIsActive()){
             if(gamepad1.right_trigger_pressed){
-                intakeMotor.setPower(0.3);
-                transferMotor.setPower(0.3);
+                intakeMotor.setPower(1);
+                transferMotor.setPower(1);
             }
             else {
                 intakeMotor.setPower(0);

@@ -3,6 +3,8 @@ package org.firstinspires.ftc.teamcode.testing;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 @TeleOp
 public class MotorTest extends LinearOpMode {
@@ -19,6 +21,11 @@ public class MotorTest extends LinearOpMode {
         rightRear.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         leftRear.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
+        frontRight.setDirection(DcMotorEx.Direction.REVERSE);
+        frontLeft.setDirection(DcMotorEx.Direction.FORWARD);
+        rightRear.setDirection(DcMotorEx.Direction.REVERSE);
+        leftRear.setDirection(DcMotorEx.Direction.FORWARD);
+
         frontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         frontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         rightRear.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -32,27 +39,27 @@ public class MotorTest extends LinearOpMode {
         waitForStart();
 
         while(opModeIsActive()) {
-            if (gamepad1.x) {
+            if (gamepad1.circle) {
                 frontRight.setPower(1);
             }
             else {
                 frontRight.setPower(0);
             }
-            if (gamepad1.y) {
+            if (gamepad1.triangle) {
                 frontLeft.setPower(1);
             }
             else {
                 frontLeft.setPower(0);
             }
-            if (gamepad1.a) {
-                rightRear.setPower(0.3);
+            if (gamepad1.cross) {
+                rightRear.setPower(1);
 
             }
             else {
                 rightRear.setPower(0);
             }
-            if (gamepad1.b) {
-                leftRear.setPower(0.3);
+            if (gamepad1.square) {
+                leftRear.setPower(1);
             }
             else {
                 leftRear.setPower(0);
