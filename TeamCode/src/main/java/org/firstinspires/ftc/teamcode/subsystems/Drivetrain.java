@@ -41,8 +41,8 @@ public class Drivetrain extends SubsystemBase {
 
         frontRight.setDirection(DcMotor.Direction.REVERSE);
         frontLeft.setDirection(DcMotor.Direction.FORWARD);
-        rightRear.setDirection(DcMotor.Direction.REVERSE);
-        leftRear.setDirection(DcMotor.Direction.FORWARD);
+        rightRear.setDirection(DcMotor.Direction.FORWARD);
+        leftRear.setDirection(DcMotor.Direction.REVERSE);
 
         frontRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         frontLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -54,7 +54,7 @@ public class Drivetrain extends SubsystemBase {
     }
 
     public void drive(double x, double y, double rx) {
-            double denominator = Math.max(Math.abs(x) + Math.abs(y) + Math.abs(rx), 1);
+        double denominator = Math.max(Math.abs(x) + Math.abs(y) + Math.abs(rx), 1);
         frontLeft.setPower((y + x + rx) / denominator);
         frontRight.setPower((y - x - rx) / denominator);
         rightRear.setPower((y + x - rx) / denominator);

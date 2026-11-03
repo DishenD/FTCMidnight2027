@@ -37,9 +37,9 @@ public class Shooter extends SubsystemBase {
             shooterMotor.setPower(0);
         }
         telemetryM.addData("Shooter Target Power", targetPower);
-        telemetryM.addData("Shooter Motor Velocity", shooterMotor.getVelocity());
-        telemetryM.addData("Shooter Running", isRunning);
-    }
+        telemetryM.addData("Shooter Motor Velocity", shooterMotor.getVelocity()); //312 x 537.7 ticks per turn / 60 seconds = 2,796 ticks/s
+        telemetryM.addData("Shooter Running", isRunning); //the maximum ticks per second should be around 2500 - 2800 from GoBilda spec sheet
+    } //RPM = ticks/s / 537.7 x 60, Ex - 2796 ticks/s = 312 RPM
 
     public void start() {
         isRunning = true;

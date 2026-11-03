@@ -11,10 +11,9 @@ import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 @TeleOp
 public class FlywheelTuning extends OpMode {
 
-   public DcMotorEx flywheelMotor;
+   public DcMotorEx shooterMotor;
    private DcMotorEx intakeMotor;
    private DcMotorEx transferMotor;
-
    public double highVelocity = 1850;
 
    public double lowVelocity = 1000;
@@ -34,20 +33,20 @@ public class FlywheelTuning extends OpMode {
 
     @Override
     public void init() {
-        flywheelMotor = hardwareMap.get(DcMotorEx.class, "shooterMotor");
-        flywheelMotor.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
-        flywheelMotor.setDirection(DcMotorEx.Direction.REVERSE);
+        shooterMotor = hardwareMap.get(DcMotorEx.class, "shooterMotor");
+        shooterMotor.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+        shooterMotor.setDirection(DcMotorEx.Direction.REVERSE);
 
         transferMotor = hardwareMap.get(DcMotorEx.class, "transferMotor");
         transferMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        transferMotor.setDirection(DcMotorEx.Direction.REVERSE);
+        transferMotor.setDirection(DcMotorEx.Direction.FORWARD);
 
         intakeMotor = hardwareMap.get(DcMotorEx.class, "intakeMotor");
         intakeMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        intakeMotor.setDirection(DcMotorEx.Direction.FORWARD);
+        intakeMotor.setDirection(DcMotorEx.Direction.REVERSE);
 
         PIDFCoefficients pidfCoefficients = new PIDFCoefficients(P, 0, 0, F);
-        flywheelMotor.setPIDFCoefficients(DcMotorEx.RunMode.RUN_USING_ENCODER, pidfCoefficients);
+        shooterMotor.setPIDFCoefficients(DcMotorEx.RunMode.RUN_USING_ENCODER, pidfCoefficients);
 
     }
 
@@ -93,11 +92,11 @@ public class FlywheelTuning extends OpMode {
         }
 
         PIDFCoefficients pidfCoefficients = new PIDFCoefficients(P, 0, 0, F);
-        flywheelMotor.setPIDFCoefficients(DcMotorEx.RunMode.RUN_USING_ENCODER, pidfCoefficients);
+        shooterMotor.setPIDFCoefficients(DcMotorEx.RunMode.RUN_USING_ENCODER, pidfCoefficients);
 
-        flywheelMotor.setVelocity(curTargetVelocity);
+        shooterMotor.setVelocity(curTargetVelocity);
 
-        double curVelocity = flywheelMotor.getVelocity();
+        double curVelocity = shooterMotor.getVelocity();
         double rpm = curVelocity / TICKS_PER_REV * 60;
         double error = curTargetVelocity - curVelocity;
 
