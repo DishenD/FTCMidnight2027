@@ -8,12 +8,17 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.Range;
 import com.seattlesolvers.solverslib.command.SubsystemBase;
+import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 
 public class Shooter extends SubsystemBase {
+    private double TICKS_PER_REV = 28;
     private DcMotorEx shooterMotor;
-    double targetPower = 0.5;
-    double increments = 0.1;
+    double targetRPM = 1500;
+    double increments = 100;
     boolean isRunning = false;
+    double P = 50;
+    double F = 14.5;
+    double maxRPM = 4500;
 
 
     @IgnoreConfigurable
@@ -22,24 +27,30 @@ public class Shooter extends SubsystemBase {
     public Shooter(HardwareMap hMap, TelemetryManager telemetryM) {
         shooterMotor = hMap.get(DcMotorEx.class, "shooterMotor");
         shooterMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-        shooterMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        shooterMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         shooterMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+
+        PIDFCoefficients pidfCoefficients = new PIDFCoefficients(P, 0, 0, F);
+        shooterMotor.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidfCoefficients);
 
         this.telemetryM = telemetryM;
     }
 
     @Override
     public void periodic() {
+
+        double currentRPM = shooterMotor.getVelocity() / TICKS_PER_REV * 60;
         if(isRunning) {
-            shooterMotor.setPower(targetPower);
+            shooterMotor.setVelocity(targetRPM * TICKS_PER_REV / 60); //conversion to ticks per second which is what set velocity accepts
         }
         else {
             shooterMotor.setPower(0);
         }
-        telemetryM.addData("Shooter Target Power", targetPower);
-        telemetryM.addData("Shooter Motor Velocity", shooterMotor.getVelocity()); //312 x 537.7 ticks per turn / 60 seconds = 2,796 ticks/s
-        telemetryM.addData("Shooter Running", isRunning); //the maximum ticks per second should be around 2500 - 2800 from GoBilda spec sheet
-    } //RPM = ticks/s / 537.7 x 60, Ex - 2796 ticks/s = 312 RPM
+        telemetryM.addData("Shooter Target RPM", targetRPM);
+        telemetryM.addData("Shooter Current RPM", Math.round(currentRPM));
+        telemetryM.addData("Shooter Motor Velocity", shooterMotor.getVelocity());
+        telemetryM.addData("Shooter Running", isRunning);
+    }
 
     public void start() {
         isRunning = true;
@@ -52,12 +63,12 @@ public class Shooter extends SubsystemBase {
         isRunning = !isRunning;
     }
     public void increasePower() {
-        targetPower = Range.clip(targetPower + increments, 0, 1);
-        targetPower = Math.round(targetPower * 10) / 10.0;
+        targetRPM = Range.clip(targetRPM + increments, 0, maxRPM);
+
     }
     public void decreasePower() {
-        targetPower = Range.clip(targetPower - increments, 0, 1);
-        targetPower = Math.round(targetPower * 10) / 10.0;
+        targetRPM = Range.clip(targetRPM - increments, 0, maxRPM);
+
     }
 
 }

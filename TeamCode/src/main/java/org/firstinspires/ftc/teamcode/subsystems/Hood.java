@@ -13,7 +13,7 @@ public class Hood extends SubsystemBase {
 
     private Servo hoodServo;
     private double hoodHigh = 0.43;
-    private double hoodLow = 0.08;
+    private double hoodLow = 0.13;
     private boolean hoodDown = true;
 
     @IgnoreConfigurable

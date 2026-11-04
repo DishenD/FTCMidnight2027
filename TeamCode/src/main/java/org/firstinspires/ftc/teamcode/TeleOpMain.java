@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode;
 import com.bylazar.telemetry.PanelsTelemetry;
 import com.bylazar.telemetry.TelemetryManager;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.seattlesolvers.solverslib.command.CommandOpMode;
 import com.seattlesolvers.solverslib.command.RunCommand;
@@ -11,6 +12,8 @@ import com.seattlesolvers.solverslib.gamepad.GamepadEx;
 import com.seattlesolvers.solverslib.gamepad.GamepadKeys;
 
 import org.firstinspires.ftc.teamcode.subsystems.Drivetrain;
+import org.firstinspires.ftc.teamcode.subsystems.FlowerServo;
+import org.firstinspires.ftc.teamcode.subsystems.Gate;
 import org.firstinspires.ftc.teamcode.subsystems.Hood;
 import org.firstinspires.ftc.teamcode.subsystems.Intake;
 import org.firstinspires.ftc.teamcode.subsystems.Shooter;
@@ -24,6 +27,8 @@ public class TeleOpMain extends CommandOpMode {
     private Transfer transfer;
     private Shooter shooter;
     private Hood hood;
+    private Gate gate;
+    private FlowerServo flowerServo;
 
     private TelemetryManager telemetryM;
 
@@ -36,6 +41,8 @@ public class TeleOpMain extends CommandOpMode {
         transfer = new Transfer(hardwareMap, telemetryM);
         shooter = new Shooter(hardwareMap, telemetryM);
         hood = new Hood(hardwareMap, telemetryM);
+        gate = new Gate(hardwareMap, telemetryM);
+        flowerServo = new FlowerServo(hardwareMap, telemetryM);
 
         GamepadEx driver = new GamepadEx(gamepad1);
         GamepadEx driver2 = new GamepadEx(gamepad2);
@@ -60,9 +67,16 @@ public class TeleOpMain extends CommandOpMode {
         driver2.getGamepadButton(GamepadKeys.Button.DPAD_DOWN).whenPressed(() -> shooter.decreasePower());
         driver.getGamepadButton(GamepadKeys.Button.TRIANGLE).whenPressed(() -> shooter.toggle());
         driver2.getGamepadButton(GamepadKeys.Button.TRIANGLE).whenPressed(() -> hood.toggle());
+        driver.getGamepadButton(GamepadKeys.Button.CIRCLE).whenPressed(() -> flowerServo.toggle());
+        driver2.getGamepadButton(GamepadKeys.Button.DPAD_RIGHT).whenPressed(() -> gate.open());
+        driver2.getGamepadButton(GamepadKeys.Button.DPAD_LEFT).whenPressed(() -> gate.closed());
 
         new Trigger(() -> driver.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) > 0.5)
                 .whenActive(() -> {intake.start(); transfer.start(); })
+                        .whenInactive(() -> {intake.stop(); transfer.stop(); });
+
+        new Trigger(() -> driver.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) > 0.5)
+                .whenActive(() -> {intake.reverse(); transfer.reverse(); })
                         .whenInactive(() -> {intake.stop(); transfer.stop(); });
 
 

@@ -9,8 +9,8 @@ import com.seattlesolvers.solverslib.command.SubsystemBase;
 public class FlowerServo extends SubsystemBase {
 
     private Servo flowerServo;
-    private double flowerServoUp = 0.5;
-    private double flowerServoDown = 0.5;
+    private double flowerServoUp = 0.46;
+    private double flowerServoDown = 0.08;
     private boolean isFlowerServoDown = false;
 
     @IgnoreConfigurable

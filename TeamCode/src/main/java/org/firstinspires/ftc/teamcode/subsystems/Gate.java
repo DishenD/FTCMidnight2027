@@ -10,8 +10,8 @@ import com.seattlesolvers.solverslib.command.SubsystemBase;
 public class Gate extends SubsystemBase {
 
     private Servo gateServo;
-    private double gateServoOpen = 0.5;
-    private double gateServoClosed = 0.5;
+    private double gateServoClosed = 0.45;
+    private double gateServoOpen = 0.33;
 
     @IgnoreConfigurable
     private TelemetryManager telemetryM;

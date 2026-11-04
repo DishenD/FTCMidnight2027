@@ -40,4 +40,6 @@ public class Transfer extends SubsystemBase {
         transferMotor.setPower(1);
     }
 
+    public void reverse() {transferMotor.setPower(-1);}
+
 }

@@ -13,6 +13,7 @@ public class Intake extends SubsystemBase {
 
     private DcMotorEx intakeMotor;
     double intakePower = 1;
+    double outtakePower = -1;
 
 
     @IgnoreConfigurable
@@ -42,5 +43,10 @@ public class Intake extends SubsystemBase {
     public void start() {
         intakePower = Range.clip(intakePower, -1, 1);
         intakeMotor.setPower(intakePower);
+    }
+
+    public void reverse() {
+        outtakePower = Range.clip(outtakePower, -1, 1);
+        intakeMotor.setPower(outtakePower);
     }
 }
