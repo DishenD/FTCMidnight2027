@@ -13,21 +13,20 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 public class BallIntake extends LinearOpMode {
 
     private DcMotorEx intakeMotor;
-    private DcMotorEx transferMotor;
+    private DcMotorEx transferMotorTwo;
 
     @Override
     public void runOpMode() {
 
          intakeMotor = hardwareMap.get(DcMotorEx.class, "intakeMotor");
-         transferMotor = hardwareMap.get(DcMotorEx.class, "transferMotor");
+         transferMotorTwo = hardwareMap.get(DcMotorEx.class, "transferMotor");
 
-        transferMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+        transferMotorTwo.setDirection(DcMotorSimple.Direction.REVERSE);
         intakeMotor.setDirection(DcMotorSimple.Direction.FORWARD);
-
-        transferMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        transferMotorTwo.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         intakeMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-        transferMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        transferMotorTwo.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         intakeMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         waitForStart();
@@ -35,20 +34,20 @@ public class BallIntake extends LinearOpMode {
         while(opModeIsActive()){
             if(gamepad1.right_trigger_pressed){
                 intakeMotor.setPower(1);
-                transferMotor.setPower(1);
+                transferMotorTwo.setPower(1);
             }
             else {
                 intakeMotor.setPower(0);
-                transferMotor.setPower(0);
+                transferMotorTwo.setPower(0);
             }
 
             telemetry.addData("intakeMotor Power", intakeMotor.getPower());
-            telemetry.addData("TransferMotor Power", transferMotor.getPower());
+            telemetry.addData("TransferMotor Power", transferMotorTwo.getPower());
             telemetry.update();
         }
 
         intakeMotor.setPower(0);
-        transferMotor.setPower(0);
+        transferMotorTwo.setPower(0);
 
     }
 

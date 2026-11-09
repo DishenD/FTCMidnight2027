@@ -34,12 +34,14 @@ public class TeleOpMain extends CommandOpMode {
 
     @Override
     public void initialize() {
+        reset();
         telemetryM = PanelsTelemetry.INSTANCE.getTelemetry();
 
         drivetrain = new Drivetrain(hardwareMap, telemetryM);
         intake =  new Intake(hardwareMap, telemetryM);
         transfer = new Transfer(hardwareMap, telemetryM);
         shooter = new Shooter(hardwareMap, telemetryM);
+        shooter.setPIDF(58, 16.3);
         hood = new Hood(hardwareMap, telemetryM);
         gate = new Gate(hardwareMap, telemetryM);
         flowerServo = new FlowerServo(hardwareMap, telemetryM);
@@ -65,11 +67,12 @@ public class TeleOpMain extends CommandOpMode {
 
         driver2.getGamepadButton(GamepadKeys.Button.DPAD_UP).whenPressed(() -> shooter.increasePower());
         driver2.getGamepadButton(GamepadKeys.Button.DPAD_DOWN).whenPressed(() -> shooter.decreasePower());
-        driver.getGamepadButton(GamepadKeys.Button.TRIANGLE).whenPressed(() -> shooter.toggle());
-        driver2.getGamepadButton(GamepadKeys.Button.TRIANGLE).whenPressed(() -> hood.toggle());
+        driver2.getGamepadButton(GamepadKeys.Button.TRIANGLE).whenPressed(() -> shooter.toggle());
+        driver2.getGamepadButton(GamepadKeys.Button.SQUARE).whenPressed(() -> hood.toggle());
         driver.getGamepadButton(GamepadKeys.Button.CIRCLE).whenPressed(() -> flowerServo.toggle());
         driver2.getGamepadButton(GamepadKeys.Button.DPAD_RIGHT).whenPressed(() -> gate.open());
         driver2.getGamepadButton(GamepadKeys.Button.DPAD_LEFT).whenPressed(() -> gate.closed());
+        driver.getGamepadButton(GamepadKeys.Button.SQUARE).whenPressed(() -> drivetrain.resetHeading());
 
         new Trigger(() -> driver.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) > 0.5)
                 .whenActive(() -> {intake.start(); transfer.start(); })

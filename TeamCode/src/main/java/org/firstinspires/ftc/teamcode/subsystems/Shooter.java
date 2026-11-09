@@ -13,11 +13,9 @@ import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 public class Shooter extends SubsystemBase {
     private double TICKS_PER_REV = 28;
     private DcMotorEx shooterMotor;
-    double targetRPM = 1500;
+    double targetRPM = 3300;
     double increments = 100;
     boolean isRunning = false;
-    double P = 50;
-    double F = 14.5;
     double maxRPM = 4500;
 
 
@@ -30,8 +28,6 @@ public class Shooter extends SubsystemBase {
         shooterMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         shooterMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
 
-        PIDFCoefficients pidfCoefficients = new PIDFCoefficients(P, 0, 0, F);
-        shooterMotor.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidfCoefficients);
 
         this.telemetryM = telemetryM;
     }
@@ -69,6 +65,20 @@ public class Shooter extends SubsystemBase {
     public void decreasePower() {
         targetRPM = Range.clip(targetRPM - increments, 0, maxRPM);
 
+    }
+
+    public void setTargetRPM(double rpm) {
+        targetRPM = Range.clip(rpm, 0 , maxRPM);
+    }
+
+    public void setPIDF(double P, double F) {
+        PIDFCoefficients pidfCoefficients = new PIDFCoefficients(P, 0, 0, F);
+        shooterMotor.setPIDFCoefficients(DcMotorEx.RunMode.RUN_USING_ENCODER, pidfCoefficients);
+    }
+
+    public boolean isAtSpeed() {
+        double currentRPM = shooterMotor.getVelocity() / TICKS_PER_REV * 60;
+        return Math.abs(targetRPM - currentRPM) < 50;
     }
 
 }

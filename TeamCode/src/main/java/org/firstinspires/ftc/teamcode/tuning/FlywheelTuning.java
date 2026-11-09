@@ -14,14 +14,14 @@ public class FlywheelTuning extends OpMode {
    public DcMotorEx shooterMotor;
    private DcMotorEx intakeMotor;
    private DcMotorEx transferMotor;
-   public double highVelocity = 1850;
+   public double highVelocity = 1493;
 
    public double lowVelocity = 1000;
 
    double curTargetVelocity = highVelocity;
 
-   double F = 14.5;
-   double P = 50;
+   double F = 16.3;
+   double P = 58;
 
    double[] stepSizes = {10.0, 1.0, 0.1, 0.01, 0.001, 0.0001};
 
@@ -39,11 +39,11 @@ public class FlywheelTuning extends OpMode {
 
         transferMotor = hardwareMap.get(DcMotorEx.class, "transferMotor");
         transferMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        transferMotor.setDirection(DcMotorEx.Direction.FORWARD);
+        transferMotor.setDirection(DcMotorEx.Direction.REVERSE);
 
         intakeMotor = hardwareMap.get(DcMotorEx.class, "intakeMotor");
         intakeMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        intakeMotor.setDirection(DcMotorEx.Direction.REVERSE);
+        intakeMotor.setDirection(DcMotorEx.Direction.FORWARD);
 
         PIDFCoefficients pidfCoefficients = new PIDFCoefficients(P, 0, 0, F);
         shooterMotor.setPIDFCoefficients(DcMotorEx.RunMode.RUN_USING_ENCODER, pidfCoefficients);

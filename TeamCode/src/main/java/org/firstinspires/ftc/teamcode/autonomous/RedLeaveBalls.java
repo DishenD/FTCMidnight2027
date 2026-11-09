@@ -23,7 +23,7 @@ import org.firstinspires.ftc.teamcode.subsystems.Transfer;
 public class RedLeaveBalls extends OpMode {
 
     private Follower follower;
-    private Pose startPose = new Pose(59.2, 10.3, Math.toRadians(90));
+    private Pose startPose = new Pose(59.2, 10.3, Math.toRadians(270));
     private RedLeaveBallsPaths paths = new RedLeaveBallsPaths();
     private int pathState = 0;
     private TelemetryManager telemetryM;
@@ -40,12 +40,14 @@ public class RedLeaveBalls extends OpMode {
         follower.setPose(startPose);
         telemetryM = PanelsTelemetry.INSTANCE.getTelemetry();
         shooter = new Shooter(hardwareMap, telemetryM);
+        shooter.setTargetRPM(3300);
         intake = new Intake(hardwareMap, telemetryM);
         hood = new Hood(hardwareMap, telemetryM);
         gate = new Gate(hardwareMap, telemetryM);
         transfer = new Transfer(hardwareMap, telemetryM);
         gate.closed();
         hood.high();
+        shooter.setPIDF(50, 17.3);
     }
 
     @Override
@@ -54,28 +56,41 @@ public class RedLeaveBalls extends OpMode {
         shooter.periodic();
         switch (pathState) {
             case 0:
-                follower.follow(paths.path1());
                 shooter.start();
+                timer.reset();
                 pathState = 1;
                 break;
 
             case 1:
-                if (!follower.isBusy()) {
-                    gate.open();
-                    transfer.start();
+                if (shooter.isAtSpeed() || timer.seconds() > 3.5) {
                     intake.start();
+                    transfer.start();
+                    gate.open();
                     timer.reset();
                     pathState = 2;
                 }
                 break;
 
             case 2:
-                if (timer.seconds() > 1.5) {
+                if (timer.seconds() > 4) {
                     gate.closed();
-                    intake.stop();
                     transfer.stop();
+                    intake.stop();
+                    timer.reset();
                     shooter.stop();
                     pathState = 3;
+                }
+                break;
+
+            case 3:
+                follower.follow(paths.path1());
+                pathState = 4;
+                break;
+
+            case 4:
+                if (!follower.isBusy()) {
+                    follower.follow(paths.path2());
+                    pathState = 5;
                 }
                 break;
         }
