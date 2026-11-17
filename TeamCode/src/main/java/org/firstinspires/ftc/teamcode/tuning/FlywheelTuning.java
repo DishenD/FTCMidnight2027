@@ -1,19 +1,22 @@
 package org.firstinspires.ftc.teamcode.tuning;
 
+import com.bylazar.telemetry.PanelsTelemetry;
+import com.bylazar.telemetry.TelemetryManager;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.PIDCoefficients;
-import com.qualcomm.robotcore.hardware.PIDFCoefficients;
+
+import org.firstinspires.ftc.teamcode.subsystems.Shooter;
 
 @TeleOp
 public class FlywheelTuning extends OpMode {
 
-   public DcMotorEx shooterMotor;
+   private Shooter shooter;
    private DcMotorEx intakeMotor;
    private DcMotorEx transferMotor;
+   private DcMotorEx transferMotorTwo;
    public double highVelocity = 1493;
 
    public double lowVelocity = 1000;
@@ -21,7 +24,7 @@ public class FlywheelTuning extends OpMode {
    double curTargetVelocity = highVelocity;
 
    double F = 16.3;
-   double P = 58;
+   double P = 0;
 
    double[] stepSizes = {10.0, 1.0, 0.1, 0.01, 0.001, 0.0001};
 
@@ -29,25 +32,28 @@ public class FlywheelTuning extends OpMode {
 
    static final double TICKS_PER_REV = 28;
 
+   private TelemetryManager telemetryM;
+
 
 
     @Override
     public void init() {
-        shooterMotor = hardwareMap.get(DcMotorEx.class, "shooterMotor");
-        shooterMotor.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
-        shooterMotor.setDirection(DcMotorEx.Direction.REVERSE);
+        telemetryM = PanelsTelemetry.INSTANCE.getTelemetry();
+        shooter = new Shooter(hardwareMap, telemetryM);
 
         transferMotor = hardwareMap.get(DcMotorEx.class, "transferMotor");
         transferMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         transferMotor.setDirection(DcMotorEx.Direction.REVERSE);
 
+        transferMotorTwo = hardwareMap.get(DcMotorEx.class, "transferMotorTwo");
+        transferMotorTwo.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        transferMotorTwo.setDirection(DcMotorEx.Direction.REVERSE);
+
         intakeMotor = hardwareMap.get(DcMotorEx.class, "intakeMotor");
         intakeMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         intakeMotor.setDirection(DcMotorEx.Direction.FORWARD);
 
-        PIDFCoefficients pidfCoefficients = new PIDFCoefficients(P, 0, 0, F);
-        shooterMotor.setPIDFCoefficients(DcMotorEx.RunMode.RUN_USING_ENCODER, pidfCoefficients);
-
+        shooter.start();
     }
 
 
@@ -85,31 +91,24 @@ public class FlywheelTuning extends OpMode {
         if (gamepad1.right_trigger > 0.5) {
             intakeMotor.setPower(1);
             transferMotor.setPower(1);
+            transferMotorTwo.setPower(1);
         }
         else {
             intakeMotor.setPower(0);
             transferMotor.setPower(0);
+            transferMotorTwo.setPower(0);
         }
 
-        PIDFCoefficients pidfCoefficients = new PIDFCoefficients(P, 0, 0, F);
-        shooterMotor.setPIDFCoefficients(DcMotorEx.RunMode.RUN_USING_ENCODER, pidfCoefficients);
-
-        shooterMotor.setVelocity(curTargetVelocity);
-
-        double curVelocity = shooterMotor.getVelocity();
-        double rpm = curVelocity / TICKS_PER_REV * 60;
-        double error = curTargetVelocity - curVelocity;
+        shooter.setPIDF(P, F);
+        shooter.setTargetRPM(curTargetVelocity / TICKS_PER_REV * 60);
+        shooter.periodic();
 
         telemetry.addData("Target Velocity", curTargetVelocity);
-        telemetry.addData("Current Velocity", "%.2f", curVelocity);
-        telemetry.addData("Error", "%.2f", error);
-        telemetry.addData("Current RPM", "%.0f",  rpm);
-        telemetry.addData("Target RPM", "%.0f", curTargetVelocity / TICKS_PER_REV * 60);
         telemetry.addLine("--------------------------------");
         telemetry.addData("Tuning P", "%.4f (D-Pad U/D)", P);
         telemetry.addData("Tuning F", "%.4f (D-Pad L/R)", F);
         telemetry.addData("Step Size", "%.4f (B Button)", stepSizes[stepIndex]);
 
-        
+        telemetryM.update(telemetry);
     }
 }

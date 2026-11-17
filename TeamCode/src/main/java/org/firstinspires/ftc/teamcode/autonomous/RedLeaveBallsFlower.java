@@ -39,7 +39,7 @@ public class RedLeaveBallsFlower extends OpMode {
         follower.setPose(startPose);
         telemetryM = PanelsTelemetry.INSTANCE.getTelemetry();
         shooter = new Shooter(hardwareMap, telemetryM);
-        shooter.setTargetRPM(3300);
+        shooter.setTargetRPM(3000);
         intake = new Intake(hardwareMap, telemetryM);
         hood = new Hood(hardwareMap, telemetryM);
         gate = new Gate(hardwareMap, telemetryM);
@@ -107,19 +107,14 @@ public class RedLeaveBallsFlower extends OpMode {
 
             case 6:
                 if (!follower.isBusy()) {
+                    follower.follow(paths.path3Flower());
                     timer.reset();
                     pathState = 7;
                 }
                 break;
 
-
             case 7:
-                if (timer.seconds() > 1.5) {
-                    intake.stop();
-                    transfer.stop();
-                    flowerServo.up();
-                    follower.follow(paths.path4());
-                    shooter.start();
+                if (!follower.isBusy() || timer.seconds() > 2.5) {
                     timer.reset();
                     pathState = 8;
                 }
@@ -127,28 +122,51 @@ public class RedLeaveBallsFlower extends OpMode {
 
 
             case 8:
+                if (timer.seconds() > 2.5) {
+                    intake.stop();
+                    transfer.stop();
+                    flowerServo.up();
+                    follower.follow(paths.path4());
+                    shooter.start();
+                    timer.reset();
+                    pathState = 9;
+                }
+                break;
+
+
+            case 9:
                 if (!follower.isBusy() && (shooter.isAtSpeed() || timer.seconds() > 5)) {
                     intake.start();
                     transfer.start();
                     gate.open();
-                    pathState = 9;
+                    pathState = 10;
                     timer.reset();
                 }
                 break;
 
-            case 9:
+            case 10:
                 if (timer.seconds() > 4) {
                     intake.stop();
                     transfer.stop();
                     shooter.stop();
                     gate.closed();
                     follower.follow(paths.path5());
-                    pathState = 10;
+                    pathState = 11;
+                }
+                break;
+
+            case 11:
+                if (!follower.isBusy()) {
+                    follower.follow(paths.path5Park());
+                    pathState = 12;
                 }
                 break;
 
         }
 
+        telemetryM.addData("Path State", pathState);
+        telemetryM.addData("Y", follower.pose().y());
+        telemetryM.addData("X", follower.pose().x());
         telemetryM.update(telemetry);
     }
 }

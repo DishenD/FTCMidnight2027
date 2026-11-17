@@ -5,7 +5,7 @@ import com.pedropathing.api.Paths;
 import com.pedropathing.api.PoseFactory;
 import com.pedropathing.math.Pose;
 import com.pedropathing.paths.Path;
-import com.pedropathing.paths.interpolator.Interpolator;
+import org.firstinspires.ftc.teamcode.pedro.Constants;
 
 public class RedLeaveBallsFlowerPaths {
 
@@ -13,16 +13,12 @@ public class RedLeaveBallsFlowerPaths {
 
     private final Pose start = poseFactory.of(59.2, 10.3, 270);
     private final Pose path1 = poseFactory.of(59.2, 30, 270);
-    private final Pose point2 = poseFactory.of(34, 30, 270);
-    private final Pose point3 = poseFactory.of(15, 47, 180);
-    private final Pose point3Control1 = poseFactory.of(38, 49, 0);
-    private final Pose point4 = poseFactory.of(59, 10, 270);
-    private final Pose point4Segment1Start = poseFactory.of(59, 10, 180);
-    private final Pose point4Segment1End = poseFactory.of(59, 10, 270);
-    private final Pose point4Segment2Start = poseFactory.of(59, 10, 270);
-    private final Pose point4Segment2End = poseFactory.of(59, 10, 270);
-    private final Pose point5 = poseFactory.of(13, 96, 270);
-    private final Pose point5Control1 = poseFactory.of(11, 37, 0);
+    private final Pose point2 = poseFactory.of(30.5, 30, 270);
+    private final Pose point3 = poseFactory.of(31, 47, 270);
+    private final Pose point3Flower = poseFactory.of(10.5, 47, 180);
+    private final Pose point4 = poseFactory.of(59.5, 10.4, 270);
+    private final Pose point5Corner = poseFactory.of(23, 48, 270);
+    private final Pose point5 = poseFactory.of(12, 100, 270);
 
     public Path path1() {
         return Paths.line(start, path1).linear(start, path1);
@@ -33,14 +29,22 @@ public class RedLeaveBallsFlowerPaths {
     }
 
     public Path path3() {
-        return Paths.curve(point2, point3Control1, point3).constant(point3);
+        return Paths.line(point2, point3).constant(point3);
+    }
+
+    public Path path3Flower() {
+        return Paths.line(point3, point3Flower).constant(point3Flower).with(Constants.foresightConfig.maxPathSpeed.at(15.0));
     }
 
     public Path path4() {
-        return Paths.line(point3, point4).heading(Interpolator.piecewise().until(0.504, Interpolator.linear(point4Segment1Start, point4Segment1End)).until(1, Interpolator.linear(point4Segment2Start, point4Segment2End)));
+        return Paths.line(point3Flower, point4).linear(point3Flower, point4);
     }
 
     public Path path5() {
-        return Paths.curve(point4, point5Control1, point5).constant(point5);
+        return Paths.line(point4, point5Corner).constant(point5Corner);
+    }
+
+    public Path path5Park() {
+        return Paths.line(point5Corner, point5).constant(point5);
     }
 }

@@ -12,9 +12,14 @@ public class BlueLeaveNonePaths {
     private final PoseFactory poseFactory = PoseFactory.degrees();
 
     private final Pose start = poseFactory.of(81.2, 10, 270);
-    private final Pose path1 = poseFactory.of(81.2, 24.7, 270);
+    private final Pose path1 = poseFactory.of(81.2, 29.6, 270);
+    private final Pose point2 = poseFactory.of(131, 30, 270);
 
     public Path path1() {
         return Paths.line(start, path1).linear(start, path1);
+    }
+
+    public Path path2() {
+        return Paths.line(path1, point2).constant(point2);
     }
 }

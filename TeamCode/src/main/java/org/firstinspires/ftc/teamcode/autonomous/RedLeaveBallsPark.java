@@ -40,7 +40,7 @@ public class RedLeaveBallsPark extends OpMode {
         follower.setPose(startPose);
         telemetryM = PanelsTelemetry.INSTANCE.getTelemetry();
         shooter = new Shooter(hardwareMap, telemetryM);
-        shooter.setTargetRPM(3300);
+        shooter.setTargetRPM(3100);
         intake = new Intake(hardwareMap, telemetryM);
         hood = new Hood(hardwareMap, telemetryM);
         gate = new Gate(hardwareMap, telemetryM);
@@ -110,23 +110,41 @@ public class RedLeaveBallsPark extends OpMode {
 
             case 6:
                 if (!follower.isBusy()) {
+                    follower.follow(paths.path3Flower());
                     timer.reset();
                     pathState = 7;
                 }
                 break;
 
-
             case 7:
-                if (timer.seconds() > 1.5) {
+                if (!follower.isBusy() || timer.seconds() > 2.5) {
+                    timer.reset();
+                    pathState = 8;
+                }
+                break;
+
+
+            case 8:
+                if (timer.seconds() > 2.5) {
                     intake.stop();
                     transfer.stop();
                     flowerServo.up();
                     follower.follow(paths.path4());
-                    pathState = 8;
+                    pathState = 9;
+                }
+                break;
+
+            case 9:
+                if (!follower.isBusy()) {
+                    follower.follow(paths.path5());
+                    pathState = 10;
                 }
                 break;
         }
 
+        telemetryM.addData("Path State", pathState);
+        telemetryM.addData("Y", follower.pose().y());
+        telemetryM.addData("X", follower.pose().x());
         telemetryM.update(telemetry);
 
     }

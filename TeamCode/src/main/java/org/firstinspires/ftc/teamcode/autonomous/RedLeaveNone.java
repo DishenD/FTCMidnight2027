@@ -39,7 +39,7 @@ public class RedLeaveNone extends OpMode {
         follower.setPose(startPose);
         telemetryM = PanelsTelemetry.INSTANCE.getTelemetry();
         shooter = new Shooter(hardwareMap, telemetryM);
-        shooter.setTargetRPM(3300);
+        shooter.setTargetRPM(3100);
         intake = new Intake(hardwareMap, telemetryM);
         hood = new Hood(hardwareMap, telemetryM);
         gate = new Gate(hardwareMap, telemetryM);
@@ -90,8 +90,18 @@ public class RedLeaveNone extends OpMode {
                 follower.follow(paths.path1());
                 pathState = 4;
                 break;
+
+            case 4:
+                if (!follower.isBusy()) {
+                    follower.follow(paths.path2());
+                    pathState = 5;
+                }
+                break;
         }
 
+        telemetryM.addData("Path State", pathState);
+        telemetryM.addData("Y", follower.pose().y());
+        telemetryM.addData("X", follower.pose().x());
         telemetryM.update(telemetry);
 
     }

@@ -10,7 +10,7 @@ public class FlowerServo extends SubsystemBase {
 
     private Servo flowerServo;
     private double flowerServoUp = 1;
-    private double flowerServoDown = 0.65;
+    private double flowerServoDown = 0.51;
     private boolean isFlowerServoDown = false;
 
     @IgnoreConfigurable

@@ -11,6 +11,7 @@ import com.seattlesolvers.solverslib.command.button.Trigger;
 import com.seattlesolvers.solverslib.gamepad.GamepadEx;
 import com.seattlesolvers.solverslib.gamepad.GamepadKeys;
 
+import org.firstinspires.ftc.teamcode.constants.GlobalConstants;
 import org.firstinspires.ftc.teamcode.subsystems.Drivetrain;
 import org.firstinspires.ftc.teamcode.subsystems.FlowerServo;
 import org.firstinspires.ftc.teamcode.subsystems.Gate;
@@ -18,6 +19,7 @@ import org.firstinspires.ftc.teamcode.subsystems.Hood;
 import org.firstinspires.ftc.teamcode.subsystems.Intake;
 import org.firstinspires.ftc.teamcode.subsystems.Shooter;
 import org.firstinspires.ftc.teamcode.subsystems.Transfer;
+import org.firstinspires.ftc.teamcode.subsystems.Vision;
 
 @TeleOp(name = "TeleOp Main", group = "Drive")
 public class TeleOpMain extends CommandOpMode {
@@ -29,6 +31,7 @@ public class TeleOpMain extends CommandOpMode {
     private Hood hood;
     private Gate gate;
     private FlowerServo flowerServo;
+    private Vision vision;
 
     private TelemetryManager telemetryM;
 
@@ -40,6 +43,7 @@ public class TeleOpMain extends CommandOpMode {
         drivetrain = new Drivetrain(hardwareMap, telemetryM);
         intake =  new Intake(hardwareMap, telemetryM);
         transfer = new Transfer(hardwareMap, telemetryM);
+        vision = new Vision(hardwareMap, telemetryM, GlobalConstants.AllianceColor.RED);
         shooter = new Shooter(hardwareMap, telemetryM);
         shooter.setPIDF(58, 16.3);
         hood = new Hood(hardwareMap, telemetryM);
@@ -60,7 +64,7 @@ public class TeleOpMain extends CommandOpMode {
                 () -> drivetrain.drive(
                         gamepad1.left_stick_x,     // x  -- strafe
                         -gamepad1.left_stick_y,    // y  -- forward
-                        gamepad1.right_stick_x     // rx -- turn
+                        visionCheck()    // rx -- turn
                 ),
                 drivetrain
         ));
@@ -68,6 +72,7 @@ public class TeleOpMain extends CommandOpMode {
         driver2.getGamepadButton(GamepadKeys.Button.DPAD_UP).whenPressed(() -> shooter.increasePower());
         driver2.getGamepadButton(GamepadKeys.Button.DPAD_DOWN).whenPressed(() -> shooter.decreasePower());
         driver2.getGamepadButton(GamepadKeys.Button.TRIANGLE).whenPressed(() -> shooter.toggle());
+        driver2.getGamepadButton(GamepadKeys.Button.CROSS).whenPressed(() -> vision.toggleAiming());
         driver2.getGamepadButton(GamepadKeys.Button.SQUARE).whenPressed(() -> hood.toggle());
         driver.getGamepadButton(GamepadKeys.Button.CIRCLE).whenPressed(() -> flowerServo.toggle());
         driver2.getGamepadButton(GamepadKeys.Button.DPAD_RIGHT).whenPressed(() -> gate.open());
@@ -86,5 +91,13 @@ public class TeleOpMain extends CommandOpMode {
         // One owner for update(). Subsystems only addData(); this sends the
         // batch to Panels and mirrors it to the Driver Hub once per tick.
         schedule(new RunCommand(() -> telemetryM.update(telemetry)));
+    }
+
+
+    private double visionCheck() {
+        if (vision.isAiming() && vision.hasTarget()) {
+            return vision.getAimTurn();
+        }
+        return gamepad1.right_stick_x;
     }
 }
